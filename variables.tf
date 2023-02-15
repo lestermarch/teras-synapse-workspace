@@ -25,6 +25,12 @@ variable "enable_dedicated_sql_pool" {
   type        = bool
 }
 
+variable "enable_monitoring" {
+  default     = false
+  description = "Determines if resources should be linked to a Log Analytics workspace for monitoring"
+  type        = bool
+}
+
 variable "enable_private_networking" {
   default     = false
   description = "Determines if resources should be linked to a private network with restricted public access"
@@ -41,6 +47,18 @@ variable "firewall_allowed_ip_addresses" {
   default     = []
   description = "A list of CIDR ranges to be permitted access to the data lake Storage Account"
   type        = list(string)
+}
+
+variable "log_analytics_resource_group_name" {
+  default     = null
+  description = "The name of the resource group containing the Log Analytics Workspace to use for log and metric monitoring"
+  type        = string
+}
+
+variable "log_analytics_workspace_name" {
+  default     = null
+  description = "The name of the Log Analytics Workspace to use for log and metric monitoring"
+  type        = string
 }
 
 variable "purview_account_id" {
@@ -78,33 +96,6 @@ variable "synapse_aad_administrator" {
   type        = map(string)
 }
 
-variable "synapse_spark_pool" {
-  default = {
-    name                     = "sparkpool"
-    auto_pause_delay_minutes = 15
-    max_node_count           = 12
-    min_node_count           = 3
-    size                     = "Small"
-    version                  = "3.2"
-    requirements             = null
-  }
-  description = <<-EOT
-  A map describing the configuration for the Synapse Workspace Spark pool if enabled:
-  ```
-  {
-    name                     = "sparkpool"
-    auto_pause_delay_minutes = 15
-    max_node_count           = 12
-    min_node_count           = 3
-    size                     = "Small"
-    version                  = "3.2"
-    requirements             = file("requirements.txt")
-  }
-  ```
-  EOT
-  type        = map(string)
-}
-
 variable "synapse_dedicated_sql_pool" {
   default = {
     collation = "SQL_Latin1_General_CP1_CI_AS"
@@ -122,6 +113,46 @@ variable "synapse_dedicated_sql_pool" {
   ```
   EOT
   type        = map(string)
+}
+
+variable "synapse_dedicated_sql_pool_monitoring_logs" {
+  default     = ["AllMetrics"]
+  description = "A list of Synapse Workspace dedicated SQL pool log namespaces to monitor if monitoring is enabled"
+  type        = list(string)
+}
+
+variable "synapse_dedicated_sql_pool_monitoring_metrics" {
+  default = [
+    "DmsWorkers",
+    "ExecRequests",
+    "RequestSteps",
+    "SQLSecurityAuditEvents",
+    "SqlRequests",
+    "Waits"
+  ]
+  description = "A list of Synapse Workspace dedicated SQL pool metric namespaces to monitor if monitoring is enabled"
+  type        = list(string)
+}
+
+variable "synapse_monitoring_logs" {
+  default = [
+    "BuiltinSqlReqsEnded",
+    "GatewayApiRequests",
+    "IntegrationActivityRuns",
+    "IntegrationPipelineRuns",
+    "IntegrationTriggerRuns",
+    "SQLSecurityAuditEvents",
+    "SynapseLinkEvent",
+    "SynapseRbacOperations"
+  ]
+  description = "A list of Synapse Workspace log namespaces to monitor if monitoring is enabled"
+  type        = list(string)
+}
+
+variable "synapse_monitoring_metrics" {
+  default     = ["AllMetrics"]
+  description = "A list of Synapse Workspace metric namespaces to monitor if monitoring is enabled"
+  type        = list(string)
 }
 
 variable "synapse_private_dns_zone_ids" {
@@ -152,6 +183,45 @@ variable "synapse_role_assignments" {
   ```
   EOT
   type        = map(list(string))
+}
+
+variable "synapse_spark_pool" {
+  default = {
+    name                     = "sparkpool"
+    auto_pause_delay_minutes = 15
+    max_node_count           = 12
+    min_node_count           = 3
+    size                     = "Small"
+    version                  = "3.2"
+    requirements             = null
+  }
+  description = <<-EOT
+  A map describing the configuration for the Synapse Workspace Spark pool if enabled:
+  ```
+  {
+    name                     = "sparkpool"
+    auto_pause_delay_minutes = 15
+    max_node_count           = 12
+    min_node_count           = 3
+    size                     = "Small"
+    version                  = "3.2"
+    requirements             = file("requirements.txt")
+  }
+  ```
+  EOT
+  type        = map(string)
+}
+
+variable "synapse_spark_pool_monitoring_logs" {
+  default     = ["Apache Spark Pool"]
+  description = "A list of Synapse Workspace Spark pool log namespaces to monitor if monitoring is enabled"
+  type        = list(string)
+}
+
+variable "synapse_spark_pool_monitoring_metrics" {
+  default     = ["BigDataPoolAppsEnded"]
+  description = "A list of Synapse Workspace Spark pool metric namespaces to monitor if monitoring is enabled"
+  type        = list(string)
 }
 
 variable "tags" {

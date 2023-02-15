@@ -1,3 +1,39 @@
+resource "azurerm_synapse_role_assignment" "deployment_principal" {
+  synapse_workspace_id = azurerm_synapse_workspace.synapse.id
+  role_name            = "Synapse Administrator"
+  principal_id         = data.azurerm_client_config.deployment.object_id
+
+  depends_on = [
+    time_sleep.firewall_delay
+  ]
+}
+
+resource "azurerm_synapse_role_assignment" "synapse" {
+  for_each = {
+    for assignment in local.synapse_role_assignments : "${assignment.role_definition_name}.${assignment.principal_id}" => assignment
+  }
+
+  synapse_workspace_id = azurerm_synapse_workspace.synapse.id
+  role_name            = each.value.role_definition_name
+  principal_id         = each.value.principal_id
+
+  depends_on = [
+    time_sleep.firewall_delay
+  ]
+}
+
+resource "azurerm_synapse_sql_pool" "synapse" {
+  count = var.enable_dedicated_sql_pool ? 1 : 0
+
+  name                 = var.synapse_dedicated_sql_pool.name
+  synapse_workspace_id = azurerm_synapse_workspace.synapse.id
+  sku_name             = var.synapse_dedicated_sql_pool.sku
+  collation            = var.synapse_dedicated_sql_pool.collation
+  create_mode          = "Default"
+
+  tags = local.tags
+}
+
 resource "azurerm_synapse_workspace" "synapse" {
   #checkov:skip=CKV_AZURE_58:  Managed virtual network may be optionally enabled
   #checkov:skip=CKV_AZURE_157: Data exfiltration protection may be optionally enabled
@@ -23,30 +59,6 @@ resource "azurerm_synapse_workspace_aad_admin" "synapse" {
   object_id            = var.synapse_aad_administrator.object_id
   synapse_workspace_id = azurerm_synapse_workspace.synapse.id
   tenant_id            = var.synapse_aad_administrator.tenant_id
-
-  depends_on = [
-    time_sleep.firewall_delay
-  ]
-}
-
-resource "azurerm_synapse_role_assignment" "deployment_principal" {
-  synapse_workspace_id = azurerm_synapse_workspace.synapse.id
-  role_name            = "Synapse Administrator"
-  principal_id         = data.azurerm_client_config.deployment.object_id
-
-  depends_on = [
-    time_sleep.firewall_delay
-  ]
-}
-
-resource "azurerm_synapse_role_assignment" "synapse" {
-  for_each = {
-    for assignment in local.synapse_role_assignments : "${assignment.role_definition_name}.${assignment.principal_id}" => assignment
-  }
-
-  synapse_workspace_id = azurerm_synapse_workspace.synapse.id
-  role_name            = each.value.role_definition_name
-  principal_id         = each.value.principal_id
 
   depends_on = [
     time_sleep.firewall_delay

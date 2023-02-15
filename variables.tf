@@ -19,6 +19,12 @@ variable "enable_data_exfiltration_protection" {
   type        = bool
 }
 
+variable "enable_dedicated_sql_pool" {
+  default     = false
+  description = "Determines if a dedicated SQL pool should be deployed within the Synapse Workspace"
+  type        = bool
+}
+
 variable "enable_private_networking" {
   default     = false
   description = "Determines if resources should be linked to a private network with restricted public access"
@@ -55,11 +61,32 @@ variable "resource_suffix" {
 variable "synapse_aad_administrator" {
   description = <<-EOT
   A map describing the Azure AD username, object ID, and tenant ID for the Synapse administrator account:
+  ```
   {
     username  = "example@ascent.io"
     object_id = "00000000-0000-0000-0000-000000000000"
     tenant_id = "00000000-0000-0000-0000-000000000000"
   }
+  ```
+  EOT
+  type        = map(string)
+}
+
+variable "synapse_dedicated_sql_pool" {
+  default = {
+    collation = "SQL_Latin1_General_CP1_CI_AS"
+    name      = "dsqlpool"
+    sku       = "DW100c"
+  }
+  description = <<-EOT
+  A map describing the configuration for the Synapse Workspace dedicated SQL pool if enabled:
+  ```
+  {
+    collation = "SQL_Latin1_General_CP1_CI_AS"
+    name      = "dsqlpool"
+    sku       = "DW100c"
+  }
+  ```
   EOT
   type        = map(string)
 }
@@ -80,6 +107,7 @@ variable "synapse_role_assignments" {
   default     = {}
   description = <<-EOT
   An object mapping RBAC roles to principal IDs for the Synapse Workspace:
+  ```
   {
     "Synapse Administrator" = [
       "00000000-0000-0000-0000-000000000000"
@@ -88,6 +116,7 @@ variable "synapse_role_assignments" {
       "00000000-0000-0000-0000-000000000000"
     ]
   }
+  ```
   EOT
   type        = map(list(string))
 }
@@ -96,10 +125,12 @@ variable "tags" {
   default     = {}
   description = <<-EOT
   A collection of tags to assign to taggable resources:
+  ```
   {
     CreatedBy   = "Terraform",
     Environment = "Dev"
   }
+  ```
   EOT
   type        = map(string)
 }

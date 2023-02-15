@@ -22,6 +22,36 @@ resource "azurerm_synapse_role_assignment" "synapse" {
   ]
 }
 
+resource "azurerm_synapse_spark_pool" "synapse" {
+  count = var.enable_spark_pool ? 1 : 0
+
+  name                 = var.synapse_spark_pool.name
+  synapse_workspace_id = azurerm_synapse_workspace.synapse.id
+  node_size            = var.synapse_spark_pool.size
+  node_size_family     = "MemoryOptimized"
+  spark_version        = var.synapse_spark_pool.version
+
+  auto_pause {
+    delay_in_minutes = var.synapse_spark_pool.auto_pause_delay_minutes
+  }
+
+  auto_scale {
+    max_node_count = var.synapse_spark_pool.max_node_count
+    min_node_count = var.synapse_spark_pool.min_node_count
+  }
+
+  dynamic "library_requirement" {
+    for_each = var.synapse_spark_pool.requirements != null ? [1] : []
+
+    content {
+      content  = var.synapse_spark_pool.requirements
+      filename = "requirements.txt"
+    }
+  }
+
+  tags = local.tags
+}
+
 resource "azurerm_synapse_sql_pool" "synapse" {
   count = var.enable_dedicated_sql_pool ? 1 : 0
 

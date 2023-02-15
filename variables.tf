@@ -31,6 +31,12 @@ variable "enable_private_networking" {
   type        = bool
 }
 
+variable "enable_spark_pool" {
+  default     = true
+  description = "Determines if an Apache Spark pool should be deployed within the Synapse Workspace"
+  type        = bool
+}
+
 variable "firewall_allowed_ip_addresses" {
   default     = []
   description = "A list of CIDR ranges to be permitted access to the data lake Storage Account"
@@ -72,6 +78,33 @@ variable "synapse_aad_administrator" {
   type        = map(string)
 }
 
+variable "synapse_spark_pool" {
+  default = {
+    name                     = "sparkpool"
+    auto_pause_delay_minutes = 15
+    max_node_count           = 12
+    min_node_count           = 3
+    size                     = "Small"
+    version                  = "3.2"
+    requirements             = null
+  }
+  description = <<-EOT
+  A map describing the configuration for the Synapse Workspace Spark pool if enabled:
+  ```
+  {
+    name                     = "sparkpool"
+    auto_pause_delay_minutes = 15
+    max_node_count           = 12
+    min_node_count           = 3
+    size                     = "Small"
+    version                  = "3.2"
+    requirements             = file("requirements.txt")
+  }
+  ```
+  EOT
+  type        = map(string)
+}
+
 variable "synapse_dedicated_sql_pool" {
   default = {
     collation = "SQL_Latin1_General_CP1_CI_AS"
@@ -82,9 +115,9 @@ variable "synapse_dedicated_sql_pool" {
   A map describing the configuration for the Synapse Workspace dedicated SQL pool if enabled:
   ```
   {
-    collation = "SQL_Latin1_General_CP1_CI_AS"
     name      = "dsqlpool"
     sku       = "DW100c"
+    collation = "SQL_Latin1_General_CP1_CI_AS"
   }
   ```
   EOT

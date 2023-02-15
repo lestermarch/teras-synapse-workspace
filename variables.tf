@@ -1,5 +1,15 @@
+variable "data_lake_account_name" {
+  description = "The name of the ADLS Storage Account"
+  type        = string
+}
+
 variable "data_lake_adls_filesystem_id" {
   description = "The hierarchical filesystem ID of the ADLS Storage Account"
+  type        = string
+}
+
+variable "data_lake_resource_group_name" {
+  description = "The name of the resource group containing the ADLS Storage Account"
   type        = string
 }
 
@@ -43,18 +53,65 @@ variable "resource_suffix" {
 }
 
 variable "synapse_aad_administrator" {
-  description = "A map describing the login username and Azure AD object ID for the Syanapse administrator account"
+  description = <<-EOT
+  A map describing the Azure AD username, object ID, and tenant ID for the Synapse administrator account:
+  {
+    username  = "example@ascent.io"
+    object_id = "00000000-0000-0000-0000-000000000000"
+    tenant_id = "00000000-0000-0000-0000-000000000000"
+  }
+  EOT
   type        = map(string)
+}
+
+variable "synapse_private_dns_zone_ids" {
+  default     = []
+  description = "A list of Private DNS Zone IDs in which to register the Synapse Workspace private endpoints if enabled"
+  type        = list(string)
+}
+
+variable "synapse_private_endpoint_subnet_name" {
+  default     = null
+  description = "The subnet name in which to register the Synapse Workspace private endpoints if enabled"
+  type        = string
 }
 
 variable "synapse_role_assignments" {
   default     = {}
-  description = "An object mapping RBAC roles to principal IDs for the Synapse Workspace"
+  description = <<-EOT
+  An object mapping RBAC roles to principal IDs for the Synapse Workspace:
+  {
+    "Synapse Administrator" = [
+      "00000000-0000-0000-0000-000000000000"
+    ],
+    "Synapse Contributor" = [
+      "00000000-0000-0000-0000-000000000000"
+    ]
+  }
+  EOT
   type        = map(list(string))
 }
 
 variable "tags" {
   default     = {}
-  description = "A collection of tags to assign to taggable resources"
+  description = <<-EOT
+  A collection of tags to assign to taggable resources:
+  {
+    CreatedBy   = "Terraform",
+    Environment = "Dev"
+  }
+  EOT
   type        = map(string)
+}
+
+variable "vnet_name" {
+  default     = null
+  description = "The name of the Virtual Network to use for private connectivity"
+  type        = string
+}
+
+variable "vnet_resource_group_name" {
+  default     = null
+  description = "The name of the resource group containing the Virtual Network to use for private connectivity"
+  type        = string
 }

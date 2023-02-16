@@ -21,14 +21,90 @@ module "teras_module" {
   source  = "..."
   version = "..."
 
-  variable_a = "..."
-  varialbe_b = "..."
+  resource_group_name = "rg-data-dev-uks"
+  resource_suffix     = "data-dev-uks"
+
+  data_lake_account_name       = module.data_lake.data_lake_account_name
+  data_lake_adls_filesystem_id = module.data_lake.data_lake_adls_filesystem_id
+  synapse_aad_administrator    = {
+    username  = "example@ascent.io"
+    object_id = "00000000-0000-0000-0000-000000000000"
+    tenant_id = "00000000-0000-0000-0000-000000000000"
+  }
 }
 ```
 
 | :scroll: Note: Defaults |
 |----------|
 | See [inputs](#inputs) for a complete list of input variables and their defaults. |
+
+| :scroll: Note: Data Lake |
+|----------|
+| This module expects an existing data lake. Consider using the [teras-synapse-data-lake]() module to provision a data lake and pass the outputs from that module into this module. |
+
+Example deployment with dedicated SQL pool:
+```
+module "teras_module" {
+  source  = "..."
+  version = "..."
+
+  resource_group_name = "rg-data-dev-uks"
+  resource_suffix     = "data-dev-uks"
+
+  data_lake_account_name       = module.data_lake.data_lake_account_name
+  data_lake_adls_filesystem_id = module.data_lake.data_lake_adls_filesystem_id
+  synapse_aad_administrator    = {
+    username  = "example@ascent.io"
+    object_id = "00000000-0000-0000-0000-000000000000"
+    tenant_id = "00000000-0000-0000-0000-000000000000"
+  }
+
+  enable_dedicated_sql_pool  = true
+  synapse_dedicated_sql_pool = {
+    name      = "sqlpool"
+    sku       = "DW100c"
+    collation = "SQL_Latin1_General_CP1_CI_AS"
+  }
+}
+```
+
+| :warning: Warning: Cost |
+|----------|
+| Dedicated SQL pools are expensive. Use the optional `synapse_dedicated_sql_pool` variable to tune the pool configuration to your needs. |
+
+Example deployment with custom Spark pool configuration:
+
+```
+module "teras_module" {
+  source  = "..."
+  version = "..."
+
+  resource_group_name = "rg-data-dev-uks"
+  resource_suffix     = "data-dev-uks"
+
+  data_lake_account_name       = module.data_lake.data_lake_account_name
+  data_lake_adls_filesystem_id = module.data_lake.data_lake_adls_filesystem_id
+  synapse_aad_administrator    = {
+    username  = "example@ascent.io"
+    object_id = "00000000-0000-0000-0000-000000000000"
+    tenant_id = "00000000-0000-0000-0000-000000000000"
+  }
+
+  synapse_spark_pool = {
+    name                     = "sparkpool"
+    auto_pause_delay_minutes = 15
+    max_node_count           = 12
+    min_node_count           = 3
+    size                     = "Medium"
+    version                  = "3.2"
+    requirements             = file("requirements.txt")
+  }
+}
+```
+
+| :scroll: Note: Spark Pool Requirements |
+|----------|
+| Synapse Spark pools are deployed with some Python packages available by default |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

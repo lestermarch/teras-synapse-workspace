@@ -30,7 +30,7 @@ locals {
     "SynapseWorkspace" = {
       endpoint_name      = "pe-syn-ws-${var.resource_suffix}"
       subresource_names  = ["Web"]
-      target_resource_id = one(azurerm_synapse_private_link_hub.synapse).id
+      target_resource_id = try(azurerm_synapse_private_link_hub.synapse[0].id, null)
     }
   }
 

@@ -30,15 +30,12 @@ locals {
     "SynapseWorkspace" = {
       endpoint_name      = "pe-syn-ws-${var.resource_suffix}"
       subresource_names  = ["Web"]
-      target_resource_id = azurerm_synapse_private_link_hub.synapse[0].id
+      target_resource_id = one(azurerm_synapse_private_link_hub.synapse).id
     }
   }
-  synapse_private_endpoints_to_create = var.enable_private_networking ? [
-    "SynapseDedicatedSql",
-    "SynapseDevelopment",
-    "SynapseServerlessSql",
-    "SynapseWorkspace"
-  ] : []
+
+  # Only create private endpoints if private networking is enabled
+  synapse_private_endpoints_to_create = var.enable_private_networking ? keys(local.synapse_private_endpoints) : []
 
   # Reduce RBAC data structure into a flat format for dynamic role assignment
   synapse_role_assignments = flatten([

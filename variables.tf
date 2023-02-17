@@ -49,6 +49,12 @@ variable "firewall_allowed_ip_addresses" {
   type        = list(string)
 }
 
+variable "location" {
+  default     = "uksouth"
+  description = "The Azure region into which resources will be deployed"
+  type        = string
+}
+
 variable "log_analytics_resource_group_name" {
   default     = null
   description = "The name of the resource group containing the Log Analytics Workspace to use for log and metric monitoring"

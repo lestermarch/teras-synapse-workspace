@@ -70,7 +70,7 @@ resource "azurerm_synapse_workspace" "synapse" {
   #checkov:skip=CKV2_AZURE_19: Firewall is enabled with azurerm_synapse_firewall_rule
   name                                 = "synw-${var.resource_suffix}"
   resource_group_name                  = var.resource_group_name
-  location                             = data.azurerm_resource_group.deployment_group.location
+  location                             = var.location
   data_exfiltration_protection_enabled = var.enable_data_exfiltration_protection ? true : false
   managed_resource_group_name          = "${var.resource_group_name}-synapse-managed"
   managed_virtual_network_enabled      = var.enable_private_networking ? true : false

@@ -21,6 +21,7 @@ module "teras_module" {
   source  = "..."
   version = "..."
 
+  location            = "uksouth"
   resource_group_name = "rg-data-dev-uks"
   resource_suffix     = "data-dev-uks"
 
@@ -48,6 +49,7 @@ module "teras_module" {
   source  = "..."
   version = "..."
 
+  location            = "uksouth"
   resource_group_name = "rg-data-dev-uks"
   resource_suffix     = "data-dev-uks"
 
@@ -79,6 +81,7 @@ module "teras_module" {
   source  = "..."
   version = "..."
 
+  location            = "uksouth"
   resource_group_name = "rg-data-dev-uks"
   resource_suffix     = "data-dev-uks"
 
@@ -165,6 +168,7 @@ No modules.
 | <a name="input_enable_private_networking"></a> [enable\_private\_networking](#input\_enable\_private\_networking) | Determines if resources should be linked to a private network with restricted public access | `bool` | `false` | no |
 | <a name="input_enable_spark_pool"></a> [enable\_spark\_pool](#input\_enable\_spark\_pool) | Determines if an Apache Spark pool should be deployed within the Synapse Workspace | `bool` | `true` | no |
 | <a name="input_firewall_allowed_ip_addresses"></a> [firewall\_allowed\_ip\_addresses](#input\_firewall\_allowed\_ip\_addresses) | A list of CIDR ranges to be permitted access to the data lake Storage Account | `list(string)` | `[]` | no |
+| <a name="input_location"></a> [location](#input\_location) | The Azure region into which resources will be deployed | `string` | `"uksouth"` | no |
 | <a name="input_log_analytics_resource_group_name"></a> [log\_analytics\_resource\_group\_name](#input\_log\_analytics\_resource\_group\_name) | The name of the resource group containing the Log Analytics Workspace to use for log and metric monitoring | `string` | `null` | no |
 | <a name="input_log_analytics_workspace_name"></a> [log\_analytics\_workspace\_name](#input\_log\_analytics\_workspace\_name) | The name of the Log Analytics Workspace to use for log and metric monitoring | `string` | `null` | no |
 | <a name="input_purview_account_id"></a> [purview\_account\_id](#input\_purview\_account\_id) | The ID of the Purview account to link with the Synapse Workspace | `string` | `null` | no |

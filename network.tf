@@ -81,7 +81,7 @@ resource "azurerm_synapse_private_link_hub" "synapse" {
 
   name                = replace("pl-syn-ws-${var.resource_suffix}", "-", "")
   resource_group_name = var.resource_group_name
-  location            = data.azurerm_resource_group.deployment_group.location
+  location            = var.location
 
   tags = local.tags
 }
